@@ -1,4 +1,18 @@
-﻿namespace AirportApplication.Models.Domain
+﻿/*
+**********************************
+* Author: Luka Nikolac
+* Project Task: Airport - Phase 1
+**********************************
+* Description:
+*  
+*  Contains Model defining Airport class 
+*
+**********************************
+*/
+
+
+
+namespace AirportApplication.Models.Domain
 {
     public class Airport
     {
