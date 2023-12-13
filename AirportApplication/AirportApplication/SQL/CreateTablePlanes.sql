@@ -4,7 +4,5 @@ CREATE TABLE "Planes" (
 	"Year"	INTEGER,
 	"Country"	TEXT,
 	"Capacity"	INTEGER,
-	"Routes"	TEXT,
-	"Crew"	TEXT,
 	PRIMARY KEY("ID" AUTOINCREMENT)
 );
