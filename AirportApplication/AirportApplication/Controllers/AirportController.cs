@@ -146,14 +146,9 @@ namespace AirportApplication.Controllers
         [HttpDelete("/planes/{id}")]
         public IActionResult DeletePlane([FromRoute]int id)
         {
-            if(_airportRepository.DeletePlane(id))
-            {
-                return Ok($"Deleted plane with id={id}!");
-            }
-            else
-            {
-                return NotFound($"Could not find plane with id={id}!");
-            }
+            _airportRepository.DeletePlane(id);
+
+            return Ok();
         }
 
         [HttpPut("/planes/{id}")]
