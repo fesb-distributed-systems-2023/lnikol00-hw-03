@@ -10,7 +10,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Register repository ass singleton
-builder.Services.AddSingleton<AirportRepository>();
+builder.Services.AddSingleton<IAirportRepository, AirportRepository>();
 
 var app = builder.Build();
 

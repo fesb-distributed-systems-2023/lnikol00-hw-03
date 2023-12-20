@@ -23,9 +23,9 @@ namespace AirportApplication.Controllers
     [ApiController]
     public class AirportController : ControllerBase
     {
-        private readonly AirportRepository _airportRepository;
+        private readonly IAirportRepository _airportRepository;
 
-        public AirportController(AirportRepository airportRepository)
+        public AirportController(IAirportRepository airportRepository)
         {
             _airportRepository = airportRepository;
         }
@@ -45,18 +45,11 @@ namespace AirportApplication.Controllers
                }           
          */
         [HttpPost("/planes/new")]
-        public IActionResult CreateNewEmail([FromBody] Airport plane) 
+        public IActionResult CreateNewPlane([FromBody] Airport plane) 
         {
-            bool fSuccess = _airportRepository.CreateNewPlane(plane);
+           _airportRepository.CreateNewPlane(plane);
 
-            if(fSuccess)
-            {
-                return Ok("New plane created!");
-            }
-            else
-            {
-                return BadRequest("Something went wrong!");
-            }
+            return Ok();
         }
 
         // GET ALL
@@ -161,6 +154,25 @@ namespace AirportApplication.Controllers
             {
                 return NotFound($"Could not find plane with id={id}!");
             }
+        }
+
+        [HttpPut("/planes/{id}")]
+        public ActionResult UpdatePlane(int id, [FromBody] Airport updatedPlane)
+        {
+            if (updatedPlane == null)
+            {
+                return BadRequest();
+            }
+
+            var existingPlane = _airportRepository.GetSinglePlane(id);
+            if (existingPlane == null)
+            {
+                return NotFound();
+            }
+
+            _airportRepository.UpdatePlane(id, updatedPlane);
+
+            return Ok();
         }
     }
 }
