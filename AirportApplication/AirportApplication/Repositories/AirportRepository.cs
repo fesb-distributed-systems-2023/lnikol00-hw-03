@@ -16,7 +16,7 @@ using AirportApplication.Repositories;
 
 namespace AirportApplication.Repositories
 {
-    public class AirportRepository
+    public class AirportRepository : IAirportRepository
     {
         // List of all planes
         private List<Airport> m_lstPlanes;
@@ -28,49 +28,58 @@ namespace AirportApplication.Repositories
         }
 
         // CREATE : Create new plane
-        public bool CreateNewPlane(Airport plane)
+        public void CreateNewPlane(Airport plane)
         {
             // Adding new plane to the list
             m_lstPlanes.Add(plane);
-
-            return true;
         }
 
         // READ : Get all planes
-        public IEnumerable<Airport> GetAllPlanes()
+        public List<Airport> GetAllPlanes()
         {
             // Returns entire list 
             return m_lstPlanes;
         }
 
         // READ : Get single plane (specified by ID)
-        public Airport GetSinglePlane(int id)
+        public Airport? GetSinglePlane(int id)
         {
-            if (!m_lstPlanes.Any(plane => plane.Id == id))
-            {
-                // Checks if any plane matches currently used id, if not returns null
-                return null;
-            }
-
-            var plane = m_lstPlanes.FirstOrDefault(plane => plane.Id == id);    
-
-            // Checks if plane matches an id, if yes returns that plane
-            return plane;
+            return m_lstPlanes.FirstOrDefault(e => e.Id == id);
         }
 
         // DELETE : Delete plane (specified by ID)
-        public bool DeletePlane(int id)
+        public void DeletePlane(int id)
         {
-            // Check if plane matches ID
-            var planeToDelete = m_lstPlanes.FirstOrDefault(itemPlane => itemPlane.Id == id);
-            if(planeToDelete == null)
+            Airport? planeToRemove = GetSinglePlane(id);
+            if (planeToRemove != null)
             {
-                return false;
+                m_lstPlanes.Remove(planeToRemove);
             }
+            else
+            {
+                throw new KeyNotFoundException($"Plane with ID '{id}' not found.");
+            }
+        }
 
-            m_lstPlanes.Remove(planeToDelete);
+        public void UpdatePlane(int id, Airport updatedPlane)
+        {
 
-            return true;
+            Airport? existingPlane = GetSinglePlane(id);
+            if (existingPlane is not null)
+            {
+                // Update only if the user has permission
+                // Implement access control logic as needed
+                existingPlane.Model = updatedPlane.Model;
+                existingPlane.Year = updatedPlane.Year;
+                existingPlane.Country = updatedPlane.Country;
+                existingPlane.Capacity = updatedPlane.Capacity;
+                existingPlane.Routes = updatedPlane.Routes;
+                existingPlane.Crew = updatedPlane.Crew;
+            }
+            else
+            {
+                throw new KeyNotFoundException($"Plane with ID '{id}' not found.");
+            }
         }
     }
 }

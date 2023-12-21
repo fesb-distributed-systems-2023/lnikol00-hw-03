@@ -23,7 +23,7 @@ namespace AirportApplication.Models.Domain
         public string? Model { get; set; }
 
         // Year plane was built
-        public string? Year { get; set; }
+        public int Year { get; set; }
 
         // Country origin (Country where plane was built)
         public string? Country { get; set; }
