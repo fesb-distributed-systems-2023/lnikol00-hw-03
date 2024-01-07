@@ -22,8 +22,9 @@ namespace AirportApplication.Repositories
             command.Parameters.AddWithValue("$year", plane.Year);
             command.Parameters.AddWithValue("$country", plane.Country);
             command.Parameters.AddWithValue("$capacity", plane.Capacity);
-            
-            /*command.ExecuteNonQuery();
+
+            /* Baca error database is locked
+            command.ExecuteNonQuery();
 
             command.CommandText = @"
                  SELECT last_insert_rowid()";
@@ -166,6 +167,7 @@ namespace AirportApplication.Repositories
             command.Parameters.AddWithValue("$country", updatedPlane.Country);
             command.Parameters.AddWithValue("$capacity", updatedPlane.Capacity);
 
+            /* Baca error database is locked 
             command.ExecuteNonQuery();
 
             command.CommandText =
@@ -177,6 +179,7 @@ namespace AirportApplication.Repositories
 	                PlaneID == $id;";
 
             command.Parameters.AddWithValue("$routes", updatedPlane.Routes);
+            */
 
             int rowsAffected = command.ExecuteNonQuery();
 
