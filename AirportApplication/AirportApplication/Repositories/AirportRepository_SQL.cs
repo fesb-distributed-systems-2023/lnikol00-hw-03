@@ -22,13 +22,30 @@ namespace AirportApplication.Repositories
             command.Parameters.AddWithValue("$year", plane.Year);
             command.Parameters.AddWithValue("$country", plane.Country);
             command.Parameters.AddWithValue("$capacity", plane.Capacity);
+            
+            /*command.ExecuteNonQuery();
+
+            command.CommandText = @"
+                 SELECT last_insert_rowid()";
+
+            int planeId = Convert.ToInt32(command.ExecuteScalar());
+
+            // Use the retrieved ID in the next INSERT statement
+            command.CommandText = @"
+                 INSERT INTO PlaneRoutesMap (Routes, PlaneID)
+                 VALUES ($routes, $planeId);";
+
+            command.Parameters.AddWithValue("$routes", plane.Routes);
+            command.Parameters.AddWithValue("$planeId", planeId);
+            */
 
             int rowsAffected = command.ExecuteNonQuery();
 
             if (rowsAffected < 1)
             {
-                throw new ArgumentException("Could not insert new plane into database.");
+                throw new ArgumentException("Could not insert plane into database.");
             }
+
         }
 
         public void DeletePlane(int id)
@@ -100,7 +117,7 @@ namespace AirportApplication.Repositories
                    FROM Planes
                    LEFT JOIN PlaneRoutesMap ON Planes.ID = PlaneRoutesMap.PlaneID
                    LEFT JOIN PlaneCrewMap ON Planes.ID = PlaneCrewMap.CrewID 
-                   WHERE PLanes.ID == $id";
+                   WHERE Planes.ID == $id";
 
             command.Parameters.AddWithValue("$id", id);
 
@@ -127,7 +144,46 @@ namespace AirportApplication.Repositories
 
         public void UpdatePlane(int id, Airport updatedPlane)
         {
-            throw new NotImplementedException();
+            using var connection = new SqliteConnection(connectionDB);
+            connection.Open();
+
+            var command = connection.CreateCommand();
+            command.CommandText =
+            @"
+                UPDATE Planes
+                SET
+                    Model = $model,
+                    Year = $year,
+                    Country = $country,
+                    Capacity = $capacity
+                WHERE
+                    ID == $id;";
+
+
+            command.Parameters.AddWithValue("$id", id);
+            command.Parameters.AddWithValue("$model", updatedPlane.Model);
+            command.Parameters.AddWithValue("$year", updatedPlane.Year);
+            command.Parameters.AddWithValue("$country", updatedPlane.Country);
+            command.Parameters.AddWithValue("$capacity", updatedPlane.Capacity);
+
+            command.ExecuteNonQuery();
+
+            command.CommandText =
+            @"
+                UPDATE PlaneRoutesMap 
+                SET
+	                Routes = $routes
+                WHERE 
+	                PlaneID == $id;";
+
+            command.Parameters.AddWithValue("$routes", updatedPlane.Routes);
+
+            int rowsAffected = command.ExecuteNonQuery();
+
+            if (rowsAffected < 1)
+            {
+                throw new ArgumentException($"Could not update plane with ID = {id}.");
+            }
         }
     }
 }
