@@ -1,5 +1,6 @@
 ﻿using AirportApplication.Models.Domain;
 using Microsoft.Data.Sqlite;
+using System.Data;
 
 namespace AirportApplication.Repositories
 {
@@ -14,31 +15,16 @@ namespace AirportApplication.Repositories
             var command = connection.CreateCommand();
             command.CommandText =
             @"
-                INSERT INTO Planes (Model, Year, Country, Capacity)
-                VALUES ($model, $year, $country, $capacity)";
-
+                INSERT INTO Planes (Model, Year, Country, Capacity, Image, Type, Captain)
+                VALUES ($model, $year, $country, $capacity, $image, $type, $captain)";
 
             command.Parameters.AddWithValue("$model", plane.Model);
             command.Parameters.AddWithValue("$year", plane.Year);
             command.Parameters.AddWithValue("$country", plane.Country);
             command.Parameters.AddWithValue("$capacity", plane.Capacity);
-
-            /* Baca error database is locked
-            command.ExecuteNonQuery();
-
-            command.CommandText = @"
-                 SELECT last_insert_rowid()";
-
-            int planeId = Convert.ToInt32(command.ExecuteScalar());
-
-            // Use the retrieved ID in the next INSERT statement
-            command.CommandText = @"
-                 INSERT INTO PlaneRoutesMap (Routes, PlaneID)
-                 VALUES ($routes, $planeId);";
-
-            command.Parameters.AddWithValue("$routes", plane.Routes);
-            command.Parameters.AddWithValue("$planeId", planeId);
-            */
+            command.Parameters.AddWithValue("$image", plane.Image);
+            command.Parameters.AddWithValue("$type", plane.Type);
+            command.Parameters.AddWithValue("$captain", plane.Captain);
 
             int rowsAffected = command.ExecuteNonQuery();
 
@@ -78,10 +64,7 @@ namespace AirportApplication.Repositories
             var command = connection.CreateCommand();
             command.CommandText =
              @"    
-                   SELECT Planes.ID, Planes.Model, Planes.Year, Planes.Country, Planes.Capacity, PlaneRoutesMap.Routes, PlaneCrewMap.Crew
-                   FROM Planes
-                   LEFT JOIN PlaneRoutesMap ON Planes.ID = PlaneRoutesMap.PlaneID
-                   LEFT JOIN PlaneCrewMap ON Planes.ID = PlaneCrewMap.CrewID"; 
+                  SELECT ID, Model, Year, Country, Capacity, Image, Type, Captain FROM Planes"; 
 
             using var reader = command.ExecuteReader();
 
@@ -96,8 +79,9 @@ namespace AirportApplication.Repositories
                     Year = reader.GetInt32(2),
                     Country = reader.GetString(3),
                     Capacity = reader.GetInt32(4),
-                    Routes = reader.IsDBNull(5) ? new List<string>() : reader.GetString(5).Split(',').ToList(),
-                    Crew = reader.IsDBNull(6) ? new List<string>() : reader.GetString(6).Split(',').ToList()
+                    Image = reader.GetString(5),
+                    Type = reader.GetString(6),
+                    Captain = reader.GetString(7)
                 };
 
                 results.Add(row);
@@ -113,12 +97,9 @@ namespace AirportApplication.Repositories
 
             var command = connection.CreateCommand();
             command.CommandText =
-            @"     
-                   SELECT Planes.ID, Planes.Model, Planes.Year, Planes.Country, Planes.Capacity, PlaneRoutesMap.Routes, PlaneCrewMap.Crew
-                   FROM Planes
-                   LEFT JOIN PlaneRoutesMap ON Planes.ID = PlaneRoutesMap.PlaneID
-                   LEFT JOIN PlaneCrewMap ON Planes.ID = PlaneCrewMap.CrewID 
-                   WHERE Planes.ID == $id";
+            @"
+                 SELECT ID, Model, Year, Country, Capacity, Image, Type, Captain FROM Planes
+                 WHERE ID == $id";
 
             command.Parameters.AddWithValue("$id", id);
 
@@ -135,8 +116,9 @@ namespace AirportApplication.Repositories
                     Year = reader.GetInt32(2),
                     Country = reader.GetString(3),
                     Capacity = reader.GetInt32(4),
-                    Routes = reader.IsDBNull(5) ? new List<string>() : reader.GetString(5).Split(',').ToList(),
-                    Crew = reader.IsDBNull(6) ? new List<string>() : reader.GetString(6).Split(',').ToList()
+                    Image = reader.GetString(5),
+                    Type = reader.GetString(6),
+                    Captain = reader.GetString(7)
                 };
             }
 
@@ -156,7 +138,10 @@ namespace AirportApplication.Repositories
                     Model = $model,
                     Year = $year,
                     Country = $country,
-                    Capacity = $capacity
+                    Capacity = $capacity,
+                    Image = $image,
+                    Type = $type,
+                    Captain = $captain
                 WHERE
                     ID == $id;";
 
@@ -166,20 +151,9 @@ namespace AirportApplication.Repositories
             command.Parameters.AddWithValue("$year", updatedPlane.Year);
             command.Parameters.AddWithValue("$country", updatedPlane.Country);
             command.Parameters.AddWithValue("$capacity", updatedPlane.Capacity);
-
-            /* Baca error database is locked 
-            command.ExecuteNonQuery();
-
-            command.CommandText =
-            @"
-                UPDATE PlaneRoutesMap 
-                SET
-	                Routes = $routes
-                WHERE 
-	                PlaneID == $id;";
-
-            command.Parameters.AddWithValue("$routes", updatedPlane.Routes);
-            */
+            command.Parameters.AddWithValue("$image", updatedPlane.Image);
+            command.Parameters.AddWithValue("$type", updatedPlane.Type);
+            command.Parameters.AddWithValue("$captain", updatedPlane.Captain);
 
             int rowsAffected = command.ExecuteNonQuery();
 
