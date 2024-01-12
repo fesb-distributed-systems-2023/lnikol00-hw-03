@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AirportApplication.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Net;
 
@@ -15,11 +16,26 @@ namespace AirportApplication.Filters
                 Console.WriteLine($"ERROR: {context.Exception.Message}");
                 context.ExceptionHandled = true;
 
+                string errorMessage;
+                int statusCode;
+                if (context.Exception.GetType() == typeof(UserErrorMessage))
+                {
+                    // User error
+                    statusCode = (int)HttpStatusCode.BadRequest;
+                    errorMessage = context.Exception.Message;
+                }
+                else
+                {
+                    // Server error
+                    statusCode = (int)HttpStatusCode.InternalServerError;
+                    errorMessage = "Web API encountered an error!";
+                }
+
                 context.Result = new ContentResult
                 {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    StatusCode = statusCode,
                     ContentType = "application/text",
-                    Content = "Web API encountered an error!",
+                    Content = errorMessage,
                 };
             }
 
