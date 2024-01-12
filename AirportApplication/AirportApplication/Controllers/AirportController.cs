@@ -15,12 +15,14 @@
 
 using AirportApplication.Controllers.DTO;
 using AirportApplication.Models;
+using AirportApplication.Filters;
 using AirportApplication.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AirportApplication.Controllers
 {
+    [LogFilter]
     [ApiController]
     [Route("api/[controller]")]
     public class AirportController : ControllerBase
