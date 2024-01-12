@@ -10,9 +10,7 @@
 **********************************
 */
 
-
-
-namespace AirportApplication.Models.Domain
+namespace AirportApplication.Models
 {
     public class Airport
     {

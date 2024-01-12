@@ -10,7 +10,7 @@
 **********************************
 */
 
-using AirportApplication.Models.Domain;
+using AirportApplication.Models;
 
 namespace AirportApplication.Repositories
 {
