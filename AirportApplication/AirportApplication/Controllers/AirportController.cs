@@ -84,7 +84,7 @@ namespace AirportApplication.Controllers
             return Ok();
         }
 
-        [HttpPut("/planes/{id}")]
+        [HttpPut("{id}")]
         public ActionResult UpdatePlane(int id, [FromBody] NewPlaneDTO updatedPlane)
         {
             if (updatedPlane == null)
