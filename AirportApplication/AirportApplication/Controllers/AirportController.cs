@@ -19,6 +19,7 @@ using AirportApplication.Filters;
 using AirportApplication.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using AirportApplication.Logic;
 
 namespace AirportApplication.Controllers
 {
@@ -27,11 +28,11 @@ namespace AirportApplication.Controllers
     [Route("api/[controller]")]
     public class AirportController : ControllerBase
     {
-        private readonly IAirportRepository _airportRepository;
+        private readonly IPlaneLogic _planeLogic;
 
-        public AirportController(IAirportRepository airportRepository)
+        public AirportController(IPlaneLogic planeLogic)
         {
-            _airportRepository = airportRepository;
+            _planeLogic = planeLogic;
         }
 
         [HttpPost]
@@ -42,7 +43,7 @@ namespace AirportApplication.Controllers
                 return BadRequest($"Incorect format!");
 
             }
-           _airportRepository.CreateNewPlane(plane.ToModel());
+           _planeLogic.CreateNewPlane(plane.ToModel());
 
             return Ok();
         }
@@ -50,14 +51,14 @@ namespace AirportApplication.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<PlaneInfoDTO>> GetAllPlanes()
         {
-            var allPlanes = _airportRepository.GetAllPlanes().Select(x => PlaneInfoDTO.FromModel(x));
+            var allPlanes = _planeLogic.GetAllPlanes().Select(x => PlaneInfoDTO.FromModel(x));
             return Ok(allPlanes);
         }
 
         [HttpGet("{id}")]
         public ActionResult<PlaneInfoDTO> GetSinglePlane(int id)
         {
-            var plane = _airportRepository.GetSinglePlane(id);
+            var plane = _planeLogic.GetSinglePlane(id);
 
             if(plane is null)
             {
@@ -72,13 +73,13 @@ namespace AirportApplication.Controllers
         [HttpDelete("{id}")]
         public ActionResult DeletePlane(int id)
         {
-            var plane = _airportRepository.GetSinglePlane(id);
+            var plane = _planeLogic.GetSinglePlane(id);
             if(plane is null)
             {
                 return NotFound($"Plane with id:{id} doesn't exist!");
             }
 
-            _airportRepository.DeletePlane(id);
+            _planeLogic.DeletePlane(id);
 
             return Ok();
         }
@@ -91,13 +92,13 @@ namespace AirportApplication.Controllers
                 return BadRequest();
             }
 
-            var existingPlane = _airportRepository.GetSinglePlane(id);
+            var existingPlane = _planeLogic.GetSinglePlane(id);
             if (existingPlane == null)
             {
                 return NotFound();
             }
 
-            _airportRepository.UpdatePlane(id, updatedPlane.ToModel());
+            _planeLogic.UpdatePlane(id, updatedPlane.ToModel());
 
             return Ok();
         }

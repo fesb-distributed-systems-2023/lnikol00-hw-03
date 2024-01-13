@@ -1,3 +1,4 @@
+using AirportApplication.Logic;
 using AirportApplication.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,7 +10,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Register repository ass singleton
+builder.Services.AddSingleton<IPlaneLogic, PlaneLogic>();
 builder.Services.AddSingleton<IAirportRepository, AirportRepository_SQL>();
 
 var app = builder.Build();

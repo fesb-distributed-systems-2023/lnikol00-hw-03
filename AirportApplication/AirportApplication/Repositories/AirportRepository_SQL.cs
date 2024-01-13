@@ -1,4 +1,4 @@
-﻿using AirportApplication.Models.Domain;
+﻿using AirportApplication.Models;
 using Microsoft.Data.Sqlite;
 using System.Data;
 
