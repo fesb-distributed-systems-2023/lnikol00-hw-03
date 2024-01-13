@@ -13,120 +13,52 @@
 **********************************
 */
 
-using AirportApplication.Models.Domain;
+using AirportApplication.Controllers.DTO;
+using AirportApplication.Models;
+using AirportApplication.Filters;
 using AirportApplication.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using AirportApplication.Logic;
 
 namespace AirportApplication.Controllers
 {
+    [LogFilter]
     [ApiController]
+    [Route("api/[controller]")]
     public class AirportController : ControllerBase
     {
-        private readonly IAirportRepository _airportRepository;
+        private readonly IPlaneLogic _planeLogic;
 
-        public AirportController(IAirportRepository airportRepository)
+        public AirportController(IPlaneLogic planeLogic)
         {
-            _airportRepository = airportRepository;
+            _planeLogic = planeLogic;
         }
 
-        // CREATE
-        // Postman request: POST http://localhost:5079/planes/new
-        // Postman response: New plane created!
-        /* Postman body:
-            * {
-                 "id": 1,
-                 "model":"Plane 1",
-                 "year":"2000",
-                 "country": "Croatia",
-                 "capacity": 2000,
-                 "routes":["Miami", "New York", "Washington DC"],
-                 "crew":["Andrew", "Floyd", "Stephanie"]
-               }           
-         */
-        [HttpPost("/planes/new")]
-        public IActionResult CreateNewPlane([FromBody] Airport plane) 
+        [HttpPost]
+        public ActionResult CreateNewPlane([FromBody] NewPlaneDTO plane) 
         {
-           _airportRepository.CreateNewPlane(plane);
+            if (plane == null)
+            {
+                return BadRequest($"Incorect format!");
+
+            }
+           _planeLogic.CreateNewPlane(plane.ToModel());
 
             return Ok();
         }
 
-        // GET ALL
-        // Postman request: GET http://localhost:5079/planes/all
-        /* Postman response : 
-         * [
-                {
-                   "id": 1,
-                   "model": "Plane 1",
-                   "year": "2000",
-                   "country": "Croatia",
-                   "capacity": 2000,
-                   "routes": [
-                        "Miami",
-                        "New York",
-                        "Washington DC"
-                   ],
-                   "crew": [
-                       "Andrew",
-                       "Floyd",
-                       "Stephanie"
-                    ]
-                },
-                {
-                    "id": 2,
-                    "model": "Plane 2",
-                    "year": "2001",
-                    "country": "America",
-                    "capacity": 1800,
-                    "routes": [
-                        "Bla",
-                        "Bla",
-                        "Blab DC"
-                    ],
-                    "crew": [
-                        "One",
-                        "Two",
-                        "Three"
-                    ]
-                }
-        
-           ]
-        */
-        [HttpGet("/planes/all")]
-        public IActionResult GetAllPlanes()
+        [HttpGet]
+        public ActionResult<IEnumerable<PlaneInfoDTO>> GetAllPlanes()
         {
-            return Ok(_airportRepository.GetAllPlanes());
+            var allPlanes = _planeLogic.GetAllPlanes().Select(x => PlaneInfoDTO.FromModel(x));
+            return Ok(allPlanes);
         }
 
-        // GET SINGLE PLANE
-        // Postman request (success): GET http://localhost:5079/planes/2
-        // Postman response (success): 
-        /* 
-           {
-                "id": 2,
-                "model": "Plane 2",
-                "year": "2001",
-                "country": "America",
-                "capacity": 1800,
-                "routes": [
-                    "Bla",
-                    "Bla",
-                    "Blab DC"
-                ],
-                "crew": [
-                    "One",
-                    "Two",
-                    "Three"
-                ]
-            }
-         */
-        // Postman request (error): GET http://localhost:5079/planes/12
-        // Postman response (error): Plane with id:12 doesn't exist!
-        [HttpGet("/planes/{id}")]
-        public IActionResult GetSinglePlane([FromRoute]int id)
+        [HttpGet("{id}")]
+        public ActionResult<PlaneInfoDTO> GetSinglePlane(int id)
         {
-            var plane = _airportRepository.GetSinglePlane(id);
+            var plane = _planeLogic.GetSinglePlane(id);
 
             if(plane is null)
             {
@@ -134,38 +66,39 @@ namespace AirportApplication.Controllers
             }
             else
             {
-                return Ok(plane);
+                return Ok(PlaneInfoDTO.FromModel(plane));
             }
         }
 
-        // DELETE
-        // Postman request (success): DELETE http://localhost:5079/planes/2
-        // Postman response (success): Deleted plane with id=2!
-        // Postman request (error): DELETE http://localhost:5079/planes/12
-        // Postman response (error): Could not find plane with id=12!
-        [HttpDelete("/planes/{id}")]
-        public IActionResult DeletePlane([FromRoute]int id)
+        [HttpDelete("{id}")]
+        public ActionResult DeletePlane(int id)
         {
-            _airportRepository.DeletePlane(id);
+            var plane = _planeLogic.GetSinglePlane(id);
+            if(plane is null)
+            {
+                return NotFound($"Plane with id:{id} doesn't exist!");
+            }
+
+            _planeLogic.DeletePlane(id);
 
             return Ok();
         }
 
-        [HttpPut("/planes/{id}")]
-        public ActionResult UpdatePlane(int id, [FromBody] Airport updatedPlane)
+        [HttpPut("{id}")]
+        public ActionResult UpdatePlane(int id, [FromBody] NewPlaneDTO updatedPlane)
         {
             if (updatedPlane == null)
             {
                 return BadRequest();
             }
 
-            var existingPlane = _airportRepository.GetSinglePlane(id);
+            var existingPlane = _planeLogic.GetSinglePlane(id);
             if (existingPlane == null)
             {
                 return NotFound();
             }
 
-            _airportRepository.UpdatePlane(id, updatedPlane);
+            _planeLogic.UpdatePlane(id, updatedPlane.ToModel());
 
             return Ok();
         }

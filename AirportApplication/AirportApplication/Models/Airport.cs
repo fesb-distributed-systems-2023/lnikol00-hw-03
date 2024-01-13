@@ -10,9 +10,7 @@
 **********************************
 */
 
-
-
-namespace AirportApplication.Models.Domain
+namespace AirportApplication.Models
 {
     public class Airport
     {
@@ -21,6 +19,9 @@ namespace AirportApplication.Models.Domain
 
         // Plane model (name)
         public string? Model { get; set; }
+
+        // Plane image
+        public string? Image { get; set; }
 
         // Year plane was built
         public int Year { get; set; }
@@ -31,11 +32,10 @@ namespace AirportApplication.Models.Domain
         // Number of passengers available on flight
         public int Capacity { get; set; }
 
-        // List of cities to which the plane travels 
-        // Example: Dubrovnik-Zagreb, Zagreb-London ...
-        public List<string>? Routes { get; set; }
+        // Aircraft type, could be passenger, cargo, private
+        public string? Type { get; set; }
 
-        // List of crew members currently aboard flight
-        public List<string>? Crew { get; set; }
+        // Plane captain
+        public string? Captain { get; set; }
     }
 }

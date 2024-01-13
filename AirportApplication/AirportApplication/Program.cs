@@ -1,3 +1,5 @@
+using AirportApplication.Configuration;
+using AirportApplication.Logic;
 using AirportApplication.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,8 +11,16 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Register repository ass singleton
+builder.Services.AddSingleton<IPlaneLogic, PlaneLogic>();
 builder.Services.AddSingleton<IAirportRepository, AirportRepository_SQL>();
+
+builder.Services.AddCors(p => p.AddPolicy("cors_policy_allow_all", builder =>
+{
+    builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+}));
+
+builder.Services.Configure<ValidationConfiguration>(builder.Configuration.GetSection("Validation"));
+builder.Services.Configure<DBConfiguration>(builder.Configuration.GetSection("Database"));
 
 var app = builder.Build();
 
@@ -22,6 +32,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthorization();
+
+app.UseCors("cors_policy_allow_all");
 
 app.MapControllers();
 
