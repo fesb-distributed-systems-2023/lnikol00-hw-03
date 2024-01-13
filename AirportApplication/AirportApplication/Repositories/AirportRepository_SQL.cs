@@ -1,15 +1,23 @@
-﻿using AirportApplication.Models;
+﻿using AirportApplication.Configuration;
+using AirportApplication.Models;
 using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Options;
 using System.Data;
 
 namespace AirportApplication.Repositories
 {
     public class AirportRepository_SQL : IAirportRepository
     {
-        private readonly string connectionDB = "Data Source=C:\\Users\\Luka Nikolac\\Documents\\Faks\\DS\\lnikol00-hw-03\\AirportApplication\\AirportApplication\\SQL\\database.db";
+        private readonly string _connectionDB;
+
+        public AirportRepository_SQL(IOptions<DBConfiguration> configuration)
+        {
+            _connectionDB = configuration.Value.ConnectionDB;
+        }
+
         public void CreateNewPlane(Airport plane)
         {
-            using var connection = new SqliteConnection(connectionDB);
+            using var connection = new SqliteConnection(_connectionDB);
             connection.Open();
 
             var command = connection.CreateCommand();
@@ -37,7 +45,7 @@ namespace AirportApplication.Repositories
 
         public void DeletePlane(int id)
         {
-            using var connection = new SqliteConnection(connectionDB);
+            using var connection = new SqliteConnection(_connectionDB);
             connection.Open();
 
             var command = connection.CreateCommand();
@@ -58,7 +66,7 @@ namespace AirportApplication.Repositories
 
         public List<Airport> GetAllPlanes()
         {
-            using var connection = new SqliteConnection(connectionDB);
+            using var connection = new SqliteConnection(_connectionDB);
             connection.Open();
 
             var command = connection.CreateCommand();
@@ -92,7 +100,7 @@ namespace AirportApplication.Repositories
 
         public Airport? GetSinglePlane(int id)
         {
-            using var connection = new SqliteConnection(connectionDB);
+            using var connection = new SqliteConnection(_connectionDB);
             connection.Open();
 
             var command = connection.CreateCommand();
@@ -127,7 +135,7 @@ namespace AirportApplication.Repositories
 
         public void UpdatePlane(int id, Airport updatedPlane)
         {
-            using var connection = new SqliteConnection(connectionDB);
+            using var connection = new SqliteConnection(_connectionDB);
             connection.Open();
 
             var command = connection.CreateCommand();

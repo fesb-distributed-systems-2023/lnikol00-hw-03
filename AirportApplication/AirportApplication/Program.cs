@@ -1,3 +1,4 @@
+using AirportApplication.Configuration;
 using AirportApplication.Logic;
 using AirportApplication.Repositories;
 
@@ -12,6 +13,9 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IPlaneLogic, PlaneLogic>();
 builder.Services.AddSingleton<IAirportRepository, AirportRepository_SQL>();
+
+builder.Services.Configure<ValidationConfiguration>(builder.Configuration.GetSection("Validation"));
+builder.Services.Configure<DBConfiguration>(builder.Configuration.GetSection("Database"));
 
 var app = builder.Build();
 
