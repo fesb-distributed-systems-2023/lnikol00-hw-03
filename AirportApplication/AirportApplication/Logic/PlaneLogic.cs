@@ -40,7 +40,7 @@ namespace AirportApplication.Logic
 
             if (!Regex.IsMatch(model, _modelRegex))
             {
-                throw new UserErrorMessage("Invalid model format! Format must include only letters!");
+                throw new UserErrorMessage("Invalid model format! First letter must be capital!");
             }
         }
 
@@ -64,7 +64,7 @@ namespace AirportApplication.Logic
 
             if (!Regex.IsMatch(year.ToString(), _yearRegex))
             {
-                throw new UserErrorMessage("Invalid year format! Format must include only positive numbers!");
+                throw new UserErrorMessage("Invalid year format! Year must begin with either number 1 or number 2!");
             }
         }
 
@@ -82,7 +82,7 @@ namespace AirportApplication.Logic
 
             if (!Regex.IsMatch(country, _countryRegex))
             {
-                throw new UserErrorMessage("Invalid country format! Format must include only letters!");
+                throw new UserErrorMessage("Invalid country format! Format must include only letters! First letter must be capital!");
             }
         }
 
@@ -131,7 +131,7 @@ namespace AirportApplication.Logic
 
             if (!Regex.IsMatch(captain, _captainRegex))
             {
-                throw new UserErrorMessage("Invalid captain format. Format must include only letters!");
+                throw new UserErrorMessage("Invalid captain format. Format must include only letters! First letter must be capital!");
             }
         }
 
