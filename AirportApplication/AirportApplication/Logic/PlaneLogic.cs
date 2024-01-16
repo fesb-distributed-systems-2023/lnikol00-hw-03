@@ -1,6 +1,8 @@
-﻿using AirportApplication.Exceptions;
+﻿using AirportApplication.Configuration;
+using AirportApplication.Exceptions;
 using AirportApplication.Models;
 using AirportApplication.Repositories;
+using Microsoft.Extensions.Options;
 using System.Diagnostics.Metrics;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -10,20 +12,13 @@ namespace AirportApplication.Logic
     public class PlaneLogic : IPlaneLogic
     {
         private readonly IAirportRepository _airportRepository;
-        private int _modelMaxCharacters = 20;
-        private string _modelRegex = @"^[A-Z][a-zA-Z0-9\s-]*$";
-        private string _yearRegex = @"^[1-2]\d{0,3}$";
-        private string _countryRegex = @"^[A-Z][a-zA-Z\s]*$";
-        private int _countryMaxCharacters = 25;
-        private string _capacityRegex = @"^\d+(\.\d+)?$";
-        private string _typeRegex = @"^[A-Z][a-zA-Z]*$";
-        private string _captainRegex = @"^[A-Z][a-zA-Z\s]*$";
-        private int? _captainMaxCharacters = 15;
+        private readonly ValidationConfiguration _validation;
 
 
-        public PlaneLogic(IAirportRepository airportRepository)
+        public PlaneLogic(IAirportRepository airportRepository, IOptions<ValidationConfiguration> configuration)
         {
             _airportRepository = airportRepository;
+            _validation = configuration.Value;
         }
 
         private void ValidateModel(string? model)
@@ -33,12 +28,12 @@ namespace AirportApplication.Logic
                 throw new UserErrorMessage("Field can't be empty!");
             }
 
-            if (model.Length > _modelMaxCharacters)
+            if (model.Length > _validation.ModelMaxCharacters)
             {
                 throw new UserErrorMessage("Exceeded maximum number of characters!");
             }
 
-            if (!Regex.IsMatch(model, _modelRegex))
+            if (!Regex.IsMatch(model, _validation.ModelRegex))
             {
                 throw new UserErrorMessage("Invalid model format! First letter must be capital!");
             }
@@ -62,7 +57,7 @@ namespace AirportApplication.Logic
                 throw new UserErrorMessage("Year must be a 4-digit number!");
             }
 
-            if (!Regex.IsMatch(year.ToString(), _yearRegex))
+            if (!Regex.IsMatch(year.ToString(), _validation.YearRegex))
             {
                 throw new UserErrorMessage("Invalid year format! Year must begin with either number 1 or number 2!");
             }
@@ -75,12 +70,12 @@ namespace AirportApplication.Logic
                 throw new UserErrorMessage("Field can't be empty!");
             }
 
-            if (country.Length > _countryMaxCharacters)
+            if (country.Length > _validation.CountryMaxCharacters)
             {
                 throw new UserErrorMessage("Exceeded maximum number of characters!");
             }
 
-            if (!Regex.IsMatch(country, _countryRegex))
+            if (!Regex.IsMatch(country, _validation.CountryRegex))
             {
                 throw new UserErrorMessage("Invalid country format! Format must include only letters! First letter must be capital!");
             }
@@ -98,7 +93,7 @@ namespace AirportApplication.Logic
                 throw new UserErrorMessage("Capacity can't be less then 0 or more then 500!");
             }
 
-            if (!Regex.IsMatch(capacity.ToString(), _capacityRegex))
+            if (!Regex.IsMatch(capacity.ToString(), _validation.CapacityRegex))
             {
                 throw new UserErrorMessage("Invalid capacity format! Format must include only positive numbers!");
             }
@@ -111,7 +106,7 @@ namespace AirportApplication.Logic
                 throw new UserErrorMessage("Field can't be empty!");
             }
 
-            if (!Regex.IsMatch(type, _typeRegex))
+            if (!Regex.IsMatch(type,_validation.TypeRegex))
             {
                 throw new UserErrorMessage("Invalid type format!");
             }
@@ -124,12 +119,12 @@ namespace AirportApplication.Logic
                 throw new UserErrorMessage("Field can't be empty!");
             }
 
-            if (captain.Length > _captainMaxCharacters)
+            if (captain.Length > _validation.CaptainMaxCharacters)
             {
                 throw new UserErrorMessage("Exceeded maximum number of characters!");
             }
 
-            if (!Regex.IsMatch(captain, _captainRegex))
+            if (!Regex.IsMatch(captain, _validation.CaptainRegex))
             {
                 throw new UserErrorMessage("Invalid captain format. Format must include only letters! First letter must be capital!");
             }
