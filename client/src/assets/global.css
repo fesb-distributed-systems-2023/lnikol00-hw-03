@@ -1,0 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand&display=swap');
+
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+input[type="text"]:focus~.input-text {
+    @apply text-black bg-white transform -translate-y-6 -translate-x-2 scale-75;
+}
+
+input[type="text"]:valid~.input-text {
+    @apply text-black bg-white transform -translate-y-6 -translate-x-2 scale-75;
+}
